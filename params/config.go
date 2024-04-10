@@ -864,12 +864,13 @@ func (c *ChainConfig) checkCompatible(newcfg *ChainConfig, headNumber *big.Int, 
 
 // BaseFeeChangeDenominator bounds the amount the base fee can change between blocks.
 // The time parameters is the timestamp of the block to determine if Canyon is active or not
-func (c *ChainConfig) BaseFeeChangeDenominator(time uint64) uint64 {
+func (c *ChainConfig) BaseFeeChangeDenominator() uint64 {
 	if c.Optimism != nil {
-		if c.IsCanyon(time) {
-			return c.Optimism.EIP1559DenominatorCanyon
-		}
-		return c.Optimism.EIP1559Denominator
+		// if c.IsCanyon(time) {
+		// 	return c.Optimism.EIP1559DenominatorCanyon
+		// }
+		// return c.Optimism.EIP1559Denominator
+		return c.Optimism.EIP1559DenominatorCanyon
 	}
 	return DefaultBaseFeeChangeDenominator
 }
@@ -1057,13 +1058,13 @@ func (c *ChainConfig) Rules(num *big.Int, isMerge bool, timestamp uint64) Rules 
 		IsBerlin:         c.IsBerlin(num),
 		IsLondon:         c.IsLondon(num),
 		IsMerge:          isMerge,
-		IsShanghai:       isMerge && c.IsShanghai(num, timestamp),
-		IsCancun:         isMerge && c.IsCancun(num, timestamp),
-		IsPrague:         isMerge && c.IsPrague(num, timestamp),
-		IsVerkle:         isMerge && c.IsVerkle(num, timestamp),
+		IsShanghai:       c.IsShanghai(num, timestamp),
+		IsCancun:         c.IsCancun(num, timestamp),
+		IsPrague:         c.IsPrague(num, timestamp),
+		IsVerkle:         c.IsVerkle(num, timestamp),
 		// Optimism
-		IsOptimismBedrock:  isMerge && c.IsOptimismBedrock(num),
-		IsOptimismRegolith: isMerge && c.IsOptimismRegolith(timestamp),
-		IsOptimismCanyon:   isMerge && c.IsOptimismCanyon(timestamp),
+		IsOptimismBedrock:  c.IsOptimismBedrock(num),
+		IsOptimismRegolith: c.IsOptimismRegolith(timestamp),
+		IsOptimismCanyon:   c.IsOptimismCanyon(timestamp),
 	}
 }
