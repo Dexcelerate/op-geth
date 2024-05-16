@@ -55,6 +55,7 @@ require (
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/karalabe/usb v0.0.2
 	github.com/kylelemons/godebug v1.1.0
+	github.com/mackerelio/go-osstat v0.2.4
 	github.com/mattn/go-colorable v0.1.13
 	github.com/mattn/go-isatty v0.0.19
 	github.com/naoina/toml v0.1.2-0.20170918210437-9fafd6967416
