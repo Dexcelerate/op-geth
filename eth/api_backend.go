@@ -119,6 +119,10 @@ func (b *EthAPIBackend) HeaderByHash(ctx context.Context, hash common.Hash) (*ty
 	return b.eth.blockchain.GetHeaderByHash(hash), nil
 }
 
+func (b *EthAPIBackend) Eth() *Ethereum {
+	return b.eth
+}
+
 func (b *EthAPIBackend) BlockByNumber(ctx context.Context, number rpc.BlockNumber) (*types.Block, error) {
 	// Pending block is only known by the miner
 	if number == rpc.PendingBlockNumber {
