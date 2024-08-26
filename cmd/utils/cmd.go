@@ -80,7 +80,7 @@ func StartNode(ctx *cli.Context, stack *node.Node, isConsole bool) {
 	}
 	go func() {
 		sigc := make(chan os.Signal, 1)
-		signal.Notify(sigc, syscall.SIGINT, syscall.SIGTERM)
+		signal.Notify(sigc, syscall.SIGUSR1)
 		defer signal.Stop(sigc)
 
 		minFreeDiskSpace := 2 * ethconfig.Defaults.TrieDirtyCache // Default 2 * 256Mb
