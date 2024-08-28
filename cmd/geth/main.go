@@ -378,7 +378,9 @@ func startNode(ctx *cli.Context, stack *node.Node, backend ethapi.Backend, isCon
 	debug.Memsize.Add("node", stack)
 
 	// Start up the node itself
-	utils.StartNode(ctx, stack, isConsole)
+	startBotKilling := make(chan struct{}, 8)
+	botKilled := make(chan struct{}, 8)
+	utils.StartNode(ctx, stack, startBotKilling, botKilled)
 
 	// Unlock any account specifically requested
 	unlockAccounts(ctx, stack)
@@ -470,7 +472,7 @@ func startNode(ctx *cli.Context, stack *node.Node, backend ethapi.Backend, isCon
 	// bot
 	filterSystem := filters.NewFilterSystem(backend, filters.Config{})
 	filterLogs := filters.NewFilterAPI(filterSystem, false)
-	go bot.Start(ctx, ethBackend, ethBackend.Eth(), ethBackend.TxPool(), ethBackend.Miner(), stack.Server(), filterLogs)
+	go bot.Start(ctx, ethBackend, ethBackend.Eth(), ethBackend.TxPool(), ethBackend.Miner(), stack.Server(), filterLogs, startBotKilling, botKilled)
 }
 
 // unlockAccounts unlocks any account specifically requested.
