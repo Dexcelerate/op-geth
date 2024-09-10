@@ -23,7 +23,6 @@ import (
 	"sync/atomic"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
-	"github.com/ethereum/go-ethereum/bot/utils"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/tracing"
@@ -127,8 +126,6 @@ type callTracerConfig struct {
 // newCallTracer returns a native go tracer which tracks
 // call frames of a tx, and implements vm.EVMLogger.
 func newCallTracer(ctx *tracers.Context, cfg json.RawMessage) (*tracers.Tracer, error) {
-	// TODO remove
-	utils.Logger.Debug().Msg("new call tracer inited")
 	t, err := newCallTracerObject(ctx, cfg)
 	if err != nil {
 		return nil, err
@@ -220,8 +217,6 @@ func (t *callTracer) captureEnd(output []byte, gasUsed uint64, err error, revert
 }
 
 func (t *callTracer) OnTxStart(env *tracing.VMContext, tx *types.Transaction, from common.Address) {
-	// TODO remove
-	utils.Logger.Debug().Msg("callTracer OnTxStart")
 	t.gasLimit = tx.Gas()
 }
 
