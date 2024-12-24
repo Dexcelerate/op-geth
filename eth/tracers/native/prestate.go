@@ -238,7 +238,7 @@ func (t *prestateTracer) processDiffState() {
 				delete(t.pre[addr].Storage, key)
 			} else {
 				modified = true
-				if newVal != (common.Hash{}) {
+				if newVal != (common.Hash{}) || (newVal == (common.Hash{}) && val != (common.Hash{})) {
 					postAccount.Storage[key] = newVal
 				}
 			}

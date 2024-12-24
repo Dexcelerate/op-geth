@@ -21,6 +21,7 @@ import (
 	"bufio"
 	"bytes"
 	"compress/gzip"
+	"context"
 	"crypto/sha256"
 	"errors"
 	"fmt"
@@ -74,7 +75,7 @@ func Fatalf(format string, args ...interface{}) {
 	os.Exit(1)
 }
 
-func StartNode(ctx *cli.Context, stack *node.Node, isConsole bool) {
+func StartNode(ctx *cli.Context, stack *node.Node, startKillingBot, botKilled chan struct{}) {
 	if err := stack.Start(); err != nil {
 		Fatalf("Error starting protocol stack: %v", err)
 	}
@@ -106,20 +107,19 @@ func StartNode(ctx *cli.Context, stack *node.Node, isConsole bool) {
 			debug.LoudPanic("boom")
 		}
 
-		if isConsole {
-			// In JS console mode, SIGINT is ignored because it's handled by the console.
-			// However, SIGTERM still shuts down the node.
-			for {
-				sig := <-sigc
-				if sig == syscall.SIGTERM {
-					shutdown()
-					return
-				}
-			}
-		} else {
-			<-sigc
-			shutdown()
+		<-sigc
+		log.Info("Received SIGTERM, killing bot...")
+		startKillingBot <- struct{}{}
+
+		ctxTimeout, cancel := context.WithTimeout(context.Background(), 90*time.Second)
+		defer cancel()
+		select {
+		case <-botKilled:
+			log.Info("Bot killed signal received.")
+		case <-ctxTimeout.Done():
+			log.Warn("Timeout reached while waiting for bot to be killed.")
 		}
+		shutdown()
 	}()
 }
 

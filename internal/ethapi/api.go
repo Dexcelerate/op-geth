@@ -19,6 +19,7 @@ package ethapi
 import (
 	"context"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"maps"
@@ -1116,7 +1117,7 @@ func (diff *StateOverride) Apply(statedb *state.StateDB, precompiles vm.Precompi
 			statedb.SetBalance(addr, u256Balance, tracing.BalanceChangeUnspecified)
 		}
 		if account.State != nil && account.StateDiff != nil {
-			return fmt.Errorf("account %s has both 'state' and 'stateDiff'", addr.Hex())
+			return fmt.Errorf("account %s has both 'state' %s and 'stateDiff' %s", addr.Hex(), PrettyPrint(account.State), PrettyPrint(account.StateDiff))
 		}
 		// Replace entire state if caller requires.
 		if account.State != nil {
@@ -2542,4 +2543,12 @@ func checkTxFee(gasPrice *big.Int, gas uint64, cap float64) error {
 // CheckTxFee exports a helper function used to check whether the fee is reasonable
 func CheckTxFee(gasPrice *big.Int, gas uint64, cap float64) error {
 	return checkTxFee(gasPrice, gas, cap)
+}
+
+func PrettyPrint(i interface{}) string {
+	if i == nil {
+		return "null"
+	}
+	s, _ := json.MarshalIndent(i, "", "\t")
+	return string(s)
 }
